@@ -16,15 +16,18 @@ def authenticate_gsheets():
         'auth_provider_x509_cert_url': st.secrets["AUTH_PROVIDER_X509_CERT_URL"],
         'client_x509_cert_url': st.secrets["CLIENT_X509_CERT_URL"],
     }
-    # Adding the scope for accessing Google Sheets
     scopes = ['https://www.googleapis.com/auth/spreadsheets']
+
     try:
         creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
         client = gspread.authorize(creds)
         sheet = client.open("Portfolio Requests").sheet1
         return sheet
     except Exception as e:
-        st.error(f"Authentication failed: {e}")
+        st.error(f"Authentication failed: Detailed error: {str(e)}")
+        import traceback
+        st.text("Traceback details:")
+        st.text(traceback.format_exc())  # Print traceback to help diagnose the issue
         return None
 
 def main():
