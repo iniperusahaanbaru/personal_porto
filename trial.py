@@ -16,13 +16,13 @@ def authenticate_gsheets():
         'auth_provider_x509_cert_url': st.secrets["AUTH_PROVIDER_X509_CERT_URL"],
         'client_x509_cert_url': st.secrets["CLIENT_X509_CERT_URL"],
     }
-    # Expanding the scopes for debugging purposes
+    # Temporarily using a broader scope for debugging purposes
     scopes = ['https://www.googleapis.com/auth/drive']
 
     try:
         creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
         client = gspread.authorize(creds)
-        # Use the spreadsheet ID to open the sheet
+        # Using the spreadsheet ID to open the sheet
         sheet = client.open_by_key("1ObPwBtjC5Xs9aN6L6SzdZdBSycqA9E0I").sheet1
         return sheet
     except Exception as e:
@@ -42,7 +42,47 @@ def main():
         st.error("Failed to authenticate with Google Sheets.")
         return
 
-    # The rest of your code as it was before...
+    st.header("Portfolio Slideshow")
+    images = ['path_to_image1.jpg', 'path_to_image2.jpg', 'path_to_image3.jpg']
+    if images:
+        portfolio_index = st.slider('Browse Portfolio', 0, len(images) - 1, 0)
+        st.image(images[portfolio_index], use_column_width=True)
+
+    with st.form(key='request_form'):
+        st.subheader("Request Form")
+        full_name = st.text_input("Full Name")
+        company = st.text_input("Company")
+        contact_info = st.text_input("Contact Info (Email/Phone)")
+        code_input = st.text_input("Enter your request code")
+        request_details = st.text_area("Request Details")
+        submit_button = st.form_submit_button("Submit Request")
+    
+    if submit_button:
+        try:
+            codes = sheet.col_values(2)  # Assuming codes are in the second column
+            if code_input in codes:
+                sheet.append_row([full_name, company, contact_info, request_details])
+                st.success("Your request has been submitted successfully!")
+            else:
+                st.error("Invalid code.")
+        except Exception as e:
+            st.error(f"Failed to submit request: {e}")
+
+    if st.button("Don't have a code? Click here"):
+        with st.form(key='contact_form'):
+            st.subheader("Contact Form")
+            name = st.text_input("Name")
+            company_name = st.text_input("Company")
+            contact_method = st.text_input("Way to contact (email / phone)")
+            additional_request = st.text_area("Request Details")
+            submit_contact = st.form_submit_button("Submit Contact Request")
+
+        if submit_contact:
+            try:
+                sheet.append_row([name, company_name, contact_method, additional_request, "Contact Request"])
+                st.success("Your contact request has been submitted.")
+            except Exception as e:
+                st.error(f"Failed to submit contact request: {e}")
 
 if __name__ == "__main__":
     main()
