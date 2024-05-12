@@ -21,7 +21,7 @@ def authenticate_gsheets():
     try:
         creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
         client = gspread.authorize(creds)
-        sheet = client.open("Portfolio Requests").sheet1
+        sheet = client.open("Portfolio_Requests").sheet1
         return sheet
     except Exception as e:
         st.error(f"Authentication failed: Detailed error: {str(e)}")
