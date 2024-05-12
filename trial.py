@@ -16,7 +16,9 @@ def authenticate_gsheets():
         'auth_provider_x509_cert_url': st.secrets["AUTH_PROVIDER_X509_CERT_URL"],
         'client_x509_cert_url': st.secrets["CLIENT_X509_CERT_URL"],
     }
-    creds = Credentials.from_service_account_info(credentials_dict)
+    # Adding the scope for accessing Google Sheets
+    scopes = ['https://www.googleapis.com/auth/spreadsheets']
+    creds = Credentials.from_service_account_info(credentials_dict, scopes=scopes)
     client = gspread.authorize(creds)
     sheet = client.open("Portfolio Requests").sheet1
     return sheet
