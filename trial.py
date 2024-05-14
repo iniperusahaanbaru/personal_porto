@@ -1,5 +1,5 @@
 import streamlit as st
-from pyairtable import Table
+from pyairtable import Api
 
 # Use your API Key and Base ID from Airtable
 api_key = st.secrets["AIRTABLE_TOKEN"]
@@ -7,7 +7,8 @@ base_id = st.secrets["AIRTABLE_BASE_ID"]
 table_name = "Form"  # Airtable table name
 
 # Initialize Airtable
-table = Table(api_key, base_id, table_name, typecast=True)
+api = Api(api_key)
+table = api.table(base_id, table_name)
 
 def main():
     st.title("Welcome to Your Portfolio")
@@ -31,7 +32,7 @@ def main():
     if submit_button:
         if full_name and company and contact_info and request_details:
             # Fetch code from Airtable
-            records = table.search('Code', code_input)
+            records = table.all(formula=f"{{Code}} = '{code_input}'")
             if records:
                 record = records[0]
                 usage_number = record['fields'].get('Usage Number', 0)
