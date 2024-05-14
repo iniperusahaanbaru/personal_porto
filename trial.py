@@ -69,6 +69,7 @@ def show_request_form():
 
     if st.button("Don't have a code? Click here"):
         st.session_state.page = 'contact'
+        st.rerun()
 
 def show_contact_form():
     with st.form(key='contact_form'):
