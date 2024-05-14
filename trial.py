@@ -59,6 +59,7 @@ def show_request_form():
                         'Status': 'Pending'
                     })
                     st.session_state.page = 'success'
+                    st.rerun()
                 else:
                     st.error("Insufficient usage number for this code.")
             else:
@@ -92,6 +93,7 @@ def show_contact_form():
                     'Status': 'Pending'
                 })
                 st.session_state.page = 'success'
+                st.rerun()
             except Exception as e:
                 st.error(f"An error occurred: {e}")
         else:
@@ -105,6 +107,7 @@ def show_success_page():
     st.write("Contact this number xxxxx or this email xx for further information.")
     if st.button("Submit another request"):
         st.session_state.page = 'form'
+        st.rerun()
 
 if __name__ == "__main__":
     main()
