@@ -41,11 +41,13 @@ def main():
                 record = records[0]
                 usage_number = record['fields'].get('Usage Number', 0)
                 if usage_number > 0:
-                    # Update the record with decremented usage number
+                    # Update the record with decremented usage number and new request details
                     new_usage_number = usage_number - 1
-                    table.update(record['id'], {'Usage Number': new_usage_number})
-                    # Add a new record to Airtable
-                    table.create({'Code': code_input, 'Request Details': request_details, 'Status': 'Pending'})
+                    table.update(record['id'], {
+                        'Usage Number': new_usage_number,
+                        'Request Details': request_details,
+                        'Status': 'Pending'
+                    })
                     st.success("Your request has been submitted successfully!")
                 else:
                     st.error("Insufficient usage number for this code.")
@@ -69,7 +71,14 @@ def main():
             if name and company_name and contact_method and request_type and additional_request:
                 try:
                     # Add a contact request to Airtable
-                    table.create({'Name': name, 'Company': company_name, 'Contact': contact_method, 'Type': request_type, 'Request Details': additional_request, 'Status': 'Pending'})
+                    table.create({
+                        'Name': name,
+                        'Company': company_name,
+                        'Contact': contact_method,
+                        'Type': request_type,
+                        'Request Details': additional_request,
+                        'Status': 'Pending'
+                    })
                     st.success("Your contact request has been submitted.")
                 except Exception as e:
                     st.error(f"An error occurred: {e}")
