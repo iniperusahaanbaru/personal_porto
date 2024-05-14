@@ -17,8 +17,12 @@ def main():
     tweet_url = 'https://twitter.com/kerja_enteng/status/1786344578536345691'
     
     # Embed the tweet
-    st.markdown(f'<blockquote class="twitter-tweet"><a href="{tweet_url}"></a></blockquote>', unsafe_allow_html=True)
-    st.markdown(f'[Open in Twitter]({tweet_url})')
+    st.markdown(f"""
+        <blockquote class="twitter-tweet">
+        <a href="{tweet_url}"></a>
+        </blockquote>
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    """, unsafe_allow_html=True)
 
     # Request Form with code validation
     with st.form(key='request_form'):
@@ -65,11 +69,6 @@ def main():
                 st.success("Your contact request has been submitted.")
             else:
                 st.error("Please fill all fields before submitting.")
-
-    # Ensure Twitter embed script is included
-    st.markdown("""
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
