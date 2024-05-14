@@ -61,15 +61,18 @@ def main():
             name = st.text_input("Name", "")
             company_name = st.text_input("Company", "")
             contact_method = st.text_input("Contact (Email/Phone)", "")
-            request_type = st.selectbox("Type", ["Commision", "Test", "Just A Request"])
+            request_type = st.selectbox("Type", ["Commision", "Challenge", "Just A Request"])
             additional_request = st.text_area("Request Details", "")
             submit_contact = st.form_submit_button("Submit Contact Request")
 
         if submit_contact:
             if name and company_name and contact_method and request_type and additional_request:
-                # Add a contact request to Airtable
-                table.create({'Name': name, 'Company': company_name, 'Contact': contact_method, 'Type': request_type, 'Request Details': additional_request, 'Status': 'Pending'})
-                st.success("Your contact request has been submitted.")
+                try:
+                    # Add a contact request to Airtable
+                    table.create({'Name': name, 'Company': company_name, 'Contact': contact_method, 'Type': request_type, 'Request Details': additional_request, 'Status': 'Pending'})
+                    st.success("Your contact request has been submitted.")
+                except Exception as e:
+                    st.error(f"An error occurred: {e}")
             else:
                 st.error("Please fill all fields before submitting.")
 
