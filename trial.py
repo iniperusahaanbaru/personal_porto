@@ -13,33 +13,22 @@ table = api.table(base_id, table_name)
 def main():
     st.title("Welcome to Your Portfolio")
 
-    # Tweet slideshow setup
-    tweets = [
-        'https://twitter.com/kerja_enteng/status/1786344578536345691',
-        'https://twitter.com/kerja_enteng/status/1786344578536345691',
-        'https://twitter.com/kerja_enteng/status/1786344578536345691'
-    ]
+    # Tweet to display
+    tweet_url = 'https://twitter.com/kerja_enteng/status/1786344578536345691'
     
-    if tweets:
-        tweet_index = st.slider('Browse Tweets', 0, len(tweets) - 1, 0)
-        selected_tweet = tweets[tweet_index]
-        
-        # Embed the selected tweet
-        st.markdown(f'<blockquote class="twitter-tweet"><a href="{selected_tweet}"></a></blockquote>', unsafe_allow_html=True)
-        st.markdown(f'[Open in Twitter]({selected_tweet})')
+    # Embed the tweet
+    st.markdown(f'<blockquote class="twitter-tweet"><a href="{tweet_url}"></a></blockquote>', unsafe_allow_html=True)
+    st.markdown(f'[Open in Twitter]({tweet_url})')
 
     # Request Form with code validation
     with st.form(key='request_form'):
         st.subheader("Request Form")
-        full_name = st.text_input("Full Name", "")
-        company = st.text_input("Company", "")
-        contact_info = st.text_input("Contact Info (Email/Phone)", "")
         code_input = st.text_input("Enter your request code", "")
         request_details = st.text_area("Request Details", "")
         submit_button = st.form_submit_button("Submit Request")
 
     if submit_button:
-        if full_name and company and contact_info and request_details:
+        if code_input and request_details:
             # Fetch code from Airtable
             records = table.all(formula=f"{{Code}} = '{code_input}'")
             if records:
@@ -50,7 +39,7 @@ def main():
                     new_usage_number = usage_number - 1
                     table.update(record['id'], {'Usage Number': new_usage_number})
                     # Add a new record to Airtable
-                    table.create({'Full Name': full_name, 'Company': company, 'Contact Info': contact_info, 'Request Details': request_details, 'Status': 'Pending'})
+                    table.create({'Request Details': request_details, 'Code': code_input, 'Status': 'Pending'})
                     st.success("Your request has been submitted successfully!")
                 else:
                     st.error("Insufficient usage number for this code.")
@@ -76,6 +65,11 @@ def main():
                 st.success("Your contact request has been submitted.")
             else:
                 st.error("Please fill all fields before submitting.")
+
+    # Ensure Twitter embed script is included
+    st.markdown("""
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
