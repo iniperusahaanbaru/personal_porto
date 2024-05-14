@@ -13,11 +13,20 @@ table = api.table(base_id, table_name)
 def main():
     st.title("Welcome to Your Portfolio")
 
-    # Portfolio slideshow setup
-    images = ['path_to_image1.jpg', 'path_to_image2.jpg', 'path_to_image3.jpg']
-    if images:
-        portfolio_index = st.slider('Browse Portfolio', 0, len(images) - 1, 0)
-        st.image(images[portfolio_index], use_column_width=True)
+    # Tweet slideshow setup
+    tweets = [
+        'https://twitter.com/kerja_enteng/status/1786344578536345691',
+        'https://twitter.com/kerja_enteng/status/1786344578536345691',
+        'https://twitter.com/kerja_enteng/status/1786344578536345691'
+    ]
+    
+    if tweets:
+        tweet_index = st.slider('Browse Tweets', 0, len(tweets) - 1, 0)
+        selected_tweet = tweets[tweet_index]
+        
+        # Embed the selected tweet
+        st.markdown(f'<blockquote class="twitter-tweet"><a href="{selected_tweet}"></a></blockquote>', unsafe_allow_html=True)
+        st.markdown(f'[Open in Twitter]({selected_tweet})')
 
     # Request Form with code validation
     with st.form(key='request_form'):
