@@ -25,13 +25,6 @@ def fetch_records_with_retries(table, formula, retries=3, delay=5):
 
 def main():
     st.title("Welcome to Your Portfolio")
-
-    # Portfolio slideshow setup
-    images = ['path_to_image1.jpg', 'path_to_image2.jpg', 'path_to_image3.jpg']
-    if images:
-        portfolio_index = st.slider('Browse Portfolio', 0, len(images) - 1, 0)
-        st.image(images[portfolio_index], use_column_width=True)
-
     # Request Form with code validation
     with st.form(key='request_form'):
         st.subheader("Request Form")
