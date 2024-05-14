@@ -1,5 +1,7 @@
 import streamlit as st
 from pyairtable import Api
+from requests.exceptions import HTTPError
+import time
 
 # Use your API Key and Base ID from Airtable
 api_key = st.secrets["AIRTABLE_TOKEN"]
@@ -10,31 +12,40 @@ table_name = "Form"  # Airtable table name
 api = Api(api_key)
 table = api.table(base_id, table_name)
 
+def fetch_records_with_retries(table, formula, retries=3, delay=5):
+    """Fetch records from Airtable with retries."""
+    for attempt in range(retries):
+        try:
+            return table.all(formula=formula)
+        except HTTPError as e:
+            st.error(f"Attempt {attempt + 1} failed: {e}")
+            time.sleep(delay)
+    st.error("Failed to fetch records after several attempts.")
+    return []
+
 def main():
     st.title("Welcome to Your Portfolio")
 
-    # Tweet to display
-    tweet_url = 'https://twitter.com/kerja_enteng/status/1786344578536345691'
-    
-    # Embed the tweet
-    st.markdown(f"""
-        <blockquote class="twitter-tweet">
-        <a href="{tweet_url}"></a>
-        </blockquote>
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-    """, unsafe_allow_html=True)
+    # Portfolio slideshow setup
+    images = ['path_to_image1.jpg', 'path_to_image2.jpg', 'path_to_image3.jpg']
+    if images:
+        portfolio_index = st.slider('Browse Portfolio', 0, len(images) - 1, 0)
+        st.image(images[portfolio_index], use_column_width=True)
 
     # Request Form with code validation
     with st.form(key='request_form'):
         st.subheader("Request Form")
+        full_name = st.text_input("Full Name", "")
+        company = st.text_input("Company", "")
+        contact_info = st.text_input("Contact Info (Email/Phone)", "")
         code_input = st.text_input("Enter your request code", "")
         request_details = st.text_area("Request Details", "")
         submit_button = st.form_submit_button("Submit Request")
 
     if submit_button:
-        if code_input and request_details:
-            # Fetch code from Airtable
-            records = table.all(formula=f"{{Code}} = '{code_input}'")
+        if full_name and company and contact_info and request_details:
+            # Fetch code from Airtable with retries
+            records = fetch_records_with_retries(table, formula=f"{{Code}} = '{code_input}'")
             if records:
                 record = records[0]
                 usage_number = record['fields'].get('Usage Number', 0)
@@ -43,12 +54,12 @@ def main():
                     new_usage_number = usage_number - 1
                     table.update(record['id'], {'Usage Number': new_usage_number})
                     # Add a new record to Airtable
-                    table.create({'Request Details': request_details, 'Code': code_input, 'Status': 'Pending'})
+                    table.create({'Full Name': full_name, 'Company': company, 'Contact Info': contact_info, 'Request Details': request_details, 'Status': 'Pending'})
                     st.success("Your request has been submitted successfully!")
                 else:
                     st.error("Insufficient usage number for this code.")
             else:
-                st.error("Invalid code.")
+                st.error("Invalid code or unable to fetch records.")
         else:
             st.error("Please fill all fields before submitting.")
 
