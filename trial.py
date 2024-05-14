@@ -84,9 +84,9 @@ def show_contact_form():
             try:
                 # Add a contact request to Airtable
                 table.create({
-                    'Name': name,
+                    'Full Name': name,
                     'Company': company_name,
-                    'Contact': contact_method,
+                    'Contact Info': contact_method,
                     'Type': request_type,
                     'Request Details': additional_request,
                     'Status': 'Pending'
